@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .card {
+        border-radius: 5px;
+        border: 5px solid black;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <p>總共 {{ totalGoods }} 個讚</p>
+      <Card
+        v-for="(card, i) in cards"
+        :img="cards[i].img"
+        :text="cards[i].text"
+        v-model:good="cards[i].good"
+      ></Card>
+    </div>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script id="card" type="text/x-template">
+      <div class="card">
+        <img :src="img" width="100">
+        <p>{{ text }}</p>
+        <input type="button" value="讚" v-if="!g" @click="toggleG">
+        <input type="button" value="收回讚" v-else @click="toggleG">
+      </div>
+    </script>
+    <script>
+      const { computed, reactive } = Vue
+      Vue.createApp({
+        setup() {
+          const cards = reactive([
+            {
+              img: 'https://github.com/rogeraabbccdd.png',
+              text: 'ASDASD',
+              good: false,
+            },
+            {
+              img: 'https://github.com/Parnell60606.png',
+              text: 'sdfsdf',
+              good: false,
+            },
+            {
+              img: 'https://github.com/audreyt.png',
+              text: 'qweqwe',
+              good: false,
+            },
+          ])
+          const totalGoods = computed(() => {
+            return cards.filter((card) => card.good === true).length
+          })
+          return {
+            cards,
+            totalGoods,
+          }
+        },
+      })
+        .component('Card', {
+          template: '#card',
+          props: {
+            text: String,
+            img: String,
+            good: Boolean,
+          },
+          setup(props, { emit }) {
+            const g = computed({
+              get() {
+                return props.good
+              },
+              set(value) {
+                emit('update:good', value)
+              },
+            })
+            const toggleG = () => {
+              g.value = !g.value
+            }
+
+            return {
+              g,
+              toggleG,
+            }
+          },
+        })
+        .mount('#app')
+    </script>
+  </body>
+</html>
